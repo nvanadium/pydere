@@ -30,3 +30,9 @@ Search on danbooru for similar images using iqdb
     print i.similarity  
     print i.match  
 
+Get a direct image url from pixiv  
+
+    url = 'http://www.pixiv.net/member_illust.php?mode=medium&illust_id=36334142'  
+    p = Pixiv(url)  
+    print p.source  
+

@@ -219,6 +219,13 @@ class IQDB(object):
 
 class Pixiv(object):
     
+    '''
+    Get the direct, full-size image url on pixiv, given an url with
+    'member_illust' in it.
+    The direct image url can then be used with Artist and DanArtist to find an
+    artist's name.
+    '''
+    
     def __init__(self, url):
         self.url = url
         if 'member_illust' in self.url:
