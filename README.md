@@ -1,16 +1,13 @@
 pydere
 ======
-
 A simple python interface to the yande.re, danbooru and iqdb APIs. 
-  
 - Based on https://github.com/actown/pymoe  
 - Lazy evaluation of most things.  
-  
 Examples
 --------
 Get some info on a post  
     p = Post(i)  
-    print 'post:', i
+    print 'post:', i  
     print '    artist:', p.artist  
     print '    circle:', p.circle  
     print '    source:', p.source  
