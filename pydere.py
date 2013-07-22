@@ -1,7 +1,8 @@
 import requests
+import re
 from xml.dom.minidom import parseString
 
-__all__ = ['Post', 'Artist', 'DanPost', 'IQDB']
+__all__ = ['Post', 'Artist', 'DanPost', 'DanArtist', 'IQDB', 'Pixiv']
 
 class Post(object):
     
@@ -80,22 +81,22 @@ class Post(object):
         artists = ''
         for k, v in self.post_tags.iteritems():
             if v == 'artist':
-                artists += k
+                artists += k + ' '
         if artists == '':
             return None
         else:
-            return artists
+            return artists.strip()
     
     @property
     def circle(self):
         circles = ''
         for k, v in self.post_tags.iteritems():
             if v == 'circle':
-                circles += k
+                circles += k + ' '
         if circles == '':
             return None
         else:
-            return circles
+            return circles.strip()
 
 
 class Artist(object):
@@ -159,6 +160,31 @@ class DanPost(Post):
         return None
 
 
+class DanArtist(Artist):
+    
+    '''
+    Get info on a artist on danbooru.
+    <name> can be an artist's name or website
+    '''
+    
+    def __init__(self, name):
+        req = requests.get('http://danbooru.donmai.us/artists.json',
+                           params={'name': name})
+        self.art_json = req.json()
+        if len(self.art_json) == 1:
+            self.unique = True
+            self.art_info = self.art_json[0]
+        else:
+            self.unique = False
+            self.art_info = None
+
+    @property
+    def urls(self):
+        if self.unique:
+            return [x['url'] for x in self.art_info['urls']]
+        else:
+            return None
+
 class IQDB(object):
     
     '''
@@ -189,3 +215,39 @@ class IQDB(object):
             return True
         else:
             return False
+
+
+class Pixiv(object):
+    
+    def __init__(self, url):
+        self.url = url
+        if 'member_illust' in self.url:
+            req = requests.get(self.url)
+            self.html = req.text
+        else:
+            self.html = None
+    
+    @property
+    def id(self):
+        q = 'illust_id=\d+'
+        m = re.search(q, self.url)
+        if m:
+            return self.url[m.start():m.end()].split('=')[-1]
+        else:
+            return None
+    
+    @property
+    def source(self):
+        if self.id and self.html:
+            q = ('data-title="registerImage"><img src="http://.+'
+                 + self.id + '_m\.(png|jpg)"')
+            m = re.search(q, self.html)
+            if m:
+                s = self.html[m.start():m.end()].split('src="')[-1][:-1]
+                return s.replace('_m.', '.')
+            else:
+                return None
+        else:
+            return None
+        
+        
