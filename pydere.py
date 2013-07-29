@@ -2,7 +2,7 @@ import requests
 import re
 from xml.dom.minidom import parseString
 
-__all__ = ['Post', 'Artist', 'DanPost', 'DanArtist', 'IQDB', 'Pixiv']
+__all__ = ['Post', 'Artist', 'Update', 'DanPost', 'DanArtist', 'IQDB', 'Pixiv']
 
 class Post(object):
     
@@ -48,7 +48,7 @@ class Post(object):
 
     @property
     def dimensions(self):
-        return str(self.Width()) + 'x' + str(self.Height())
+        return str(self.width) + 'x' + str(self.height)
 
     @property
     def parent_id(self):
@@ -130,6 +130,31 @@ class Artist(object):
             return self.art_info['urls']
         else:
             return None
+
+
+class Update(object):
+    
+    '''Update the tags and/or source of a post on yande.re'''
+    
+    def __init__(self, session, post, tags=None, source=None):
+        self.session = session
+        self.post = post
+        self.tags = tags
+        self.source = source
+        
+    def update(self):
+        url = 'https://yande.re/post/update.json'
+        if self.tags:
+            new_tags = self.post.tags + ' ' + self.tags
+            print '    Updating tags:', new_tags
+            params = {'id': self.post.post_id, 'post[tags]': new_tags}
+            response = self.session.post(url, data=params)
+            print '   ', response.status_code, response.reason
+        if self.source:
+            print '    Updating source:', self.source
+            params = {'id': self.post.post_id, 'post[source]': self.source}
+            response = self.session.post(url, data=params)
+            print '   ', response.status_code, response.reason
 
 
 class DanPost(Post):
