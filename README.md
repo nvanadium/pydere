@@ -4,7 +4,7 @@ pydere
 A simple python interface to the yande.re, danbooru and iqdb APIs. 
 
 - Based on https://github.com/actown/pymoe  
-- Lazy evaluation of most things.  
+- Uses @property to make most things attributes for ease of use.  
 
 Examples  
 --------  
