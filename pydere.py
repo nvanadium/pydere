@@ -134,10 +134,16 @@ class Artist(object):
 
 class Update(object):
     
-    '''Update the tags and/or source of a post on yande.re'''
+    '''
+    Update the tags and/or source of a post on yande.re
+    <session>: a requests session in which you've already logged in
+    <token>: authenticity token
+    <post>: an instance of the Post class
+    '''
     
-    def __init__(self, session, post, tags=None, source=None):
+    def __init__(self, session, token, post, tags=None, source=None):
         self.session = session
+        self.token = token
         self.post = post
         self.tags = tags
         self.source = source
@@ -147,14 +153,18 @@ class Update(object):
         if self.tags:
             new_tags = self.post.tags + ' ' + self.tags
             print '    Updating tags:', new_tags
-            params = {'id': self.post.post_id, 'post[tags]': new_tags}
+            params = {'id': self.post.post_id, 'post[tags]': new_tags,
+                      'commit': 'Save changes',
+                      'authenticity_token': self.token}
             response = self.session.post(url, data=params)
-            print '   ', response.status_code, response.reason
+            print '    Response:', response.status_code, response.reason
         if self.source:
             print '    Updating source:', self.source
-            params = {'id': self.post.post_id, 'post[source]': self.source}
+            params = {'id': self.post.post_id, 'post[source]': self.source,
+                      'commit': 'Save changes',
+                      'authenticity_token': self.token}
             response = self.session.post(url, data=params)
-            print '   ', response.status_code, response.reason
+            print '    Response:', response.status_code, response.reason
 
 
 class DanPost(Post):
