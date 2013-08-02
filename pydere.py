@@ -1,6 +1,8 @@
-import requests
 import re
-from xml.dom.minidom import parseString
+import time
+import requests
+from lxml import etree
+
 
 __all__ = ['Post', 'Artist', 'Update', 'DanPost', 'DanArtist', 'IQDB', 'Pixiv']
 
@@ -230,19 +232,17 @@ class IQDB(object):
     
     def __init__(self, image_url):
         self.cutoff = 90.0
-        req = requests.get('http://danbooru.iqdb.org/index.xml',
-                           params={'url': image_url})
-        self.xml = parseString(req.text)
+        url = 'http://danbooru.iqdb.org/index.xml?url='
+        tree = etree.parse(url+image_url)
+        self.root = tree.getroot()
 
     @property
     def similarity(self):
-        return float(self.xml.getElementsByTagName('match')[0]
-                     .getAttribute('sim'))
+        return float(self.root.xpath('/matches/match')[0].attrib['sim'])
 
     @property
     def id(self):
-        return int(self.xml.getElementsByTagName('post')[0]
-                   .getAttribute('id'))
+        return int(self.root.xpath('/matches/match/post')[0].attrib['id'])
     
     @property
     def match(self):
