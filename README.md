@@ -34,7 +34,7 @@ Search on danbooru for similar images using iqdb
 Get a direct image url from pixiv  
 
     url = 'http://www.pixiv.net/member_illust.php?mode=medium&illust_id=36334142'  
-    p = Pixiv(url)  
+    p = Pixiv(session, url)  
     print p.source  
 
 Update the tags and source on yande.re  

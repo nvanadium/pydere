@@ -149,7 +149,7 @@ class Update(object):
         self.post = post
         self.tags = tags
         self.source = source
-        
+
     def update(self):
         url = 'https://yande.re/post/update.json'
         if self.tags:
@@ -259,12 +259,13 @@ class Pixiv(object):
     'member_illust' in it.
     The direct image url can then be used with Artist and DanArtist to find an
     artist's name.
+    Requires a logged in requests session.
     '''
     
-    def __init__(self, url):
+    def __init__(self, session, url):
         self.url = url
         if 'member_illust' in self.url:
-            req = requests.get(self.url)
+            req = session.get(self.url)
             self.html = req.text
         else:
             self.html = None
@@ -281,15 +282,19 @@ class Pixiv(object):
     @property
     def source(self):
         if self.id and self.html:
-            q = ('data-title="registerImage"><img src="http://.+'
-                 + self.id + '_m\.(png|jpg)"')
+            q = self.id + '_m\.(png|jpg)'
             m = re.search(q, self.html)
             if m:
-                s = self.html[m.start():m.end()].split('src="')[-1][:-1]
+                s = self.html[:m.end()].split('src="')[-1]
                 return s.replace('_m.', '.')
             else:
-                return None
-        else:
-            return None
-        
-        
+                root = etree.fromstring(self.html, etree.HTMLParser())
+                spans = [x for x in root.iter() if x.tag=='span']
+                try:
+                    error_span = [x for x in spans if x.attrib['class']=='error'][0]
+                    if error_span != []:
+                        print '    Pixiv message:', error_span.getchildren()[0].text
+                    return None
+                except:
+                    print '    Getting direct linked failed'
+                    return None
