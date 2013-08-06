@@ -31,11 +31,14 @@ Search on danbooru for similar images using iqdb
     print i.similarity  
     print i.match  
 
-Get a direct image url from pixiv  
+Get a direct image url and other info from pixiv  
 
     url = 'http://www.pixiv.net/member_illust.php?mode=medium&illust_id=36334142'  
     p = Pixiv(session, url)  
     print p.source  
+    print p.dimensions  
+    print p.profile
+    print p.name
 
 Update the tags and source on yande.re  
 

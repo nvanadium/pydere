@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import re
 import time
 import requests
@@ -267,8 +269,10 @@ class Pixiv(object):
         if 'member_illust' in self.url:
             req = session.get(self.url)
             self.html = req.text
+            self.root = etree.fromstring(self.html, etree.HTMLParser())
         else:
             self.html = None
+            self.root = None
     
     @property
     def id(self):
@@ -288,8 +292,7 @@ class Pixiv(object):
                 s = self.html[:m.end()].split('src="')[-1]
                 return s.replace('_m.', '.')
             else:
-                root = etree.fromstring(self.html, etree.HTMLParser())
-                spans = [x for x in root.iter() if x.tag=='span']
+                spans = [x for x in self.root.iter() if x.tag=='span']
                 try:
                     error_span = [x for x in spans if x.attrib['class']=='error'][0]
                     if error_span != []:
@@ -298,3 +301,67 @@ class Pixiv(object):
                 except:
                     print '    Getting direct linked failed'
                     return None
+
+    @property
+    def dimensions(self):
+        if self.html:
+            uls = [x for x in self.root.iter() if x.tag == 'ul']
+            t = {'class': 'meta'}
+            meta = [x for x in uls if x.attrib == t][0]
+            return meta.getchildren()[1].text.replace(u'×', u'x')
+        else:
+            return None
+
+    @property
+    def width(self):
+        if self.dimensions:
+            return int(self.dimensions.split('x')[0])
+        else:
+            return None
+
+    @property
+    def height(self):
+        if self.dimensions:
+            return int(self.dimensions.split('x')[1])
+        else:
+            return None
+    
+    @property
+    def date(self):
+        if self.html:
+            uls = [x for x in self.root.iter() if x.tag == 'ul']
+            t = {'class': 'meta'}
+            meta = [x for x in uls if x.attrib == t][0]
+            fmt = '%d/%m/%Y %H:%M'
+            posttime = time.strptime(meta.getchildren()[0].text, fmt)
+            return posttime
+        else:
+            return None
+
+    @property
+    def profile(self):
+        if self.html:
+            url = 'http://www.pixiv.net'
+            a = [x for x in self.root.iter() if x.tag == 'a']
+            a = [x for x in a if x.attrib.has_key('class')]
+            link = [x for x in a if x.attrib['class']=='user-link'][0]
+            return url + link.attrib['href']
+        else:
+            return None
+
+    @property
+    def imgformat(self):
+        if self.source:
+            return self.source[-3:]
+        else:
+            return None
+        
+    @property
+    def name(self):
+        if self.html:
+            h1 = [x for x in self.root.iter() if x.tag == 'h1']
+            h1 = [x for x in h1 if x.attrib.has_key('class')]
+            name = [x for x in h1 if x.attrib['class']=='user'][0]
+            return name.text
+        else:
+            return None
