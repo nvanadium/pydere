@@ -1,0 +1,12 @@
+[yandere]
+username = your_yandere_username
+password = your_yandere_password
+token = your_yandere_authenticity_token
+cookie = your_yandere_cookie
+[pixiv]
+username = your_pixiv_username
+password = your_pixiv_password
+[danbooru]
+username = your_danbooru_username
+password = your_danbooru_password
+api_key = your_danbooru_api_key
