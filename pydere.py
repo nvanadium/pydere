@@ -125,15 +125,11 @@ class Artist(object):
     def name(self):
         if self.unique:
             return self.art_info['name']
-        else:
-            return None
 
     @property
     def urls(self):
         if self.unique:
             return self.art_info['urls']
-        else:
-            return None
 
 
 class Update(object):
@@ -221,8 +217,7 @@ class DanArtist(Artist):
     def urls(self):
         if self.unique:
             return [x['url'] for x in self.art_info['urls']]
-        else:
-            return None
+
 
 class IQDB(object):
     
@@ -280,8 +275,6 @@ class Pixiv(object):
         m = re.search(q, self.url)
         if m:
             return self.url[m.start():m.end()].split('=')[-1]
-        else:
-            return None
     
     @property
     def source(self):
@@ -309,22 +302,16 @@ class Pixiv(object):
             t = {'class': 'meta'}
             meta = [x for x in uls if x.attrib == t][0]
             return meta.getchildren()[1].text.replace(u'×', u'x')
-        else:
-            return None
 
     @property
     def width(self):
         if self.dimensions:
             return int(self.dimensions.split('x')[0])
-        else:
-            return None
 
     @property
     def height(self):
         if self.dimensions:
             return int(self.dimensions.split('x')[1])
-        else:
-            return None
     
     @property
     def date(self):
@@ -335,8 +322,6 @@ class Pixiv(object):
             fmt = '%d/%m/%Y %H:%M'
             posttime = time.strptime(meta.getchildren()[0].text, fmt)
             return posttime
-        else:
-            return None
 
     @property
     def profile(self):
@@ -346,15 +331,11 @@ class Pixiv(object):
             a = [x for x in a if x.attrib.has_key('class')]
             link = [x for x in a if x.attrib['class']=='user-link'][0]
             return url + link.attrib['href']
-        else:
-            return None
 
     @property
     def imgformat(self):
         if self.source:
             return self.source[-3:]
-        else:
-            return None
         
     @property
     def name(self):
@@ -363,5 +344,3 @@ class Pixiv(object):
             h1 = [x for x in h1 if x.attrib.has_key('class')]
             name = [x for x in h1 if x.attrib['class']=='user'][0]
             return name.text
-        else:
-            return None
