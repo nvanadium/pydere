@@ -75,10 +75,7 @@ class Post(object):
     @property
     def source(self):
         s = self.post_info['source']
-        if s == '':
-            return None
-        else:
-            return s
+        return s if s else None
 
     @property
     def artist(self):
@@ -86,10 +83,7 @@ class Post(object):
         for k, v in self.post_tags.iteritems():
             if v == 'artist':
                 artists += k + ' '
-        if artists == '':
-            return None
-        else:
-            return artists.strip()
+        return artists.strip() if artists else None
     
     @property
     def circle(self):
@@ -97,10 +91,7 @@ class Post(object):
         for k, v in self.post_tags.iteritems():
             if v == 'circle':
                 circles += k + ' '
-        if circles == '':
-            return None
-        else:
-            return circles.strip()
+        return circles.strip() if circles else None
 
 
 class Artist(object):
