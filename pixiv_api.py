@@ -6,7 +6,7 @@ import requests
 
 
 class Pixiv(object):
-    
+
     def __init__(self, url):
         self.url = url
         keys = ['img_id', 'user_id', 'ext', 'title', 'unknown1', 'user_name',
@@ -58,19 +58,24 @@ class Pixiv(object):
     def user_login_id(self):
         if self.post_info:
             return self.post_info['user_login_id']
-            
+
     @property
     def sample_url(self):
         if self.post_info:
             return self.post_info['sample_url']
 
     @property
+    def mobile_url(self):
+        if self.post_info:
+            return self.post_info['mobile_url']
+
+    @property
     def source(self):
         if self.post_info:
-            pattern = self.user_login_id + '\/'
-            m = re.search(pattern, self.sample_url)
-            if m:
-                return self.sample_url[:m.end()] + self.img_id + '.' + self.ext
+            temp = self.mobile_url.replace('mobile/', '')
+            pattern = self.img_id + '.+' + self.ext + '$'
+            repl = self.img_id + '.' + self.ext
+            return re.sub(pattern, repl, temp)
 
     @property
     def date(self):
@@ -92,7 +97,7 @@ class Pixiv(object):
     def name(self):
         if self.post_info:
             return self.post_info['user_name']
-            
+
     @property
     def manga_pages(self):
         if self.post_info:
@@ -102,7 +107,7 @@ class Pixiv(object):
     def dimensions(self):
         if self.manga_pages == '':
             return
-            
+
 
 if __name__ == '__main__':
     import rlcompleter
@@ -115,4 +120,3 @@ if __name__ == '__main__':
     #url = 'http://www.pixiv.net/member_illust.php?mode=medium&illust_id=37664499'
     #url = 'http://www.pixiv.net/member_illust.php?mode=medium&illust_id=34959240'
     p = Pixiv(url)
-    
